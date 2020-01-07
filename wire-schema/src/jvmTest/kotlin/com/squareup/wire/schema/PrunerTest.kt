@@ -1537,7 +1537,7 @@ class PrunerTest {
     assertThat(message.field("field_5")).isNull()
   }
 
-  @Test @Ignore("Implement #1349")
+  @Test
   fun typeIsRetainedIfMorePreciseRuleExists() {
     val schema = RepoBuilder()
         .add("service.proto", """
@@ -1557,7 +1557,7 @@ class PrunerTest {
     assertThat(pruned.getType("wire.MessageB")).isNull()
   }
 
-  @Test @Ignore("Implement #1349")
+  @Test
   fun fieldIsRetainedIfMorePreciseRuleExists() {
     val schema = RepoBuilder()
         .add("service.proto", """
@@ -1577,7 +1577,7 @@ class PrunerTest {
     assertThat(myMessageType.field("b")).isNull()
   }
 
-  @Test @Ignore("Implement #1349")
+  @Test
   fun enumConstantIsRetainedIfMorePreciseRuleExists() {
     val schema = RepoBuilder()
         .add("service.proto", """
@@ -1614,7 +1614,7 @@ class PrunerTest {
     assertThat(pruned.getType("MyMessage")).isNull()
   }
 
-  @Test @Ignore("Implement #1349")
+  @Test
   fun optionFieldIsRetainedIfMorePreciseRuleExists() {
     val schema = RepoBuilder()
         .add("lecture.proto", """
@@ -1651,7 +1651,7 @@ class PrunerTest {
     assertThat(messageType.field("content")!!.options.elements).isEmpty()
   }
 
-  @Test @Ignore("Implement #1349")
+  @Test
   fun nestedInclusion() {
     val schema = RepoBuilder()
         .add("service.proto", """

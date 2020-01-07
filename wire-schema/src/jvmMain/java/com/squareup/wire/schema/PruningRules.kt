@@ -125,28 +125,27 @@ class PruningRules private constructor(builder: Builder) {
     var excludeMatch: String? = null
     var rule: String? = identifier
     while (rule != null) {
-      if (excludes.contains(rule)) {
+      if (excludeMatch == null && excludes.contains(rule)) {
         excludeMatch = rule
       }
-      if (includes.contains(rule)) {
+      if (includeMatch == null && includes.contains(rule)) {
         includeMatch = rule
       }
       rule = enclosing(rule)
     }
 
-    return when {
-      excludeMatch != null -> {
-        usedExcludes.add(excludeMatch)
-        false
-      }
-      includeMatch != null -> {
-        usedIncludes.add(includeMatch)
-        true
-      }
-      else -> {
-        false
-      }
+    val isRoot = when {
+      excludeMatch != null && includeMatch != null -> excludeMatch.length < includeMatch.length
+      excludeMatch != null -> false
+      includeMatch != null -> true
+      else -> false
     }
+    if (isRoot) {
+      usedIncludes.add(includeMatch!!)
+    } else {
+      if (excludeMatch != null) usedExcludes.add(excludeMatch)
+    }
+    return isRoot
   }
 
   /**
@@ -160,24 +159,28 @@ class PruningRules private constructor(builder: Builder) {
 
   /** Returns true if `identifier` or any of its enclosing identifiers is excluded.  */
   private fun exclude(identifier: String): Boolean {
+    var includeMatch: String? = null
     var excludeMatch: String? = null
     var rule: String? = identifier
     while (rule != null) {
-      if (excludes.contains(rule)) {
+      if (excludeMatch == null && excludes.contains(rule)) {
         excludeMatch = rule
+      }
+      if (includeMatch == null && includes.contains(rule)) {
+        includeMatch = rule
       }
       rule = enclosing(rule)
     }
 
-    return when {
-      excludeMatch != null -> {
-        usedExcludes.add(excludeMatch)
-        true
-      }
-      else -> {
-        false
-      }
+    val excluded = when {
+      excludeMatch != null && includeMatch != null -> excludeMatch.length >= includeMatch.length
+      excludeMatch != null -> true
+      else -> false
     }
+    if (excluded) {
+      usedExcludes.add(excludeMatch!!)
+    }
+    return excluded
   }
 
   fun unusedIncludes() = includes - usedIncludes
